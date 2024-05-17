@@ -6,11 +6,11 @@ from random import randint
 import numpy as np
 
 # create an Arduino board instance
-board = Arduino ("COM7")
+board = Arduino ("COM6")
 # digital pin number
 
 #Led and button for start/end game
-game_run_led = board.digital[3]
+game_run_led = board.digital[4]
 game_run_led.mode = OUTPUT
 
 #button start/end
@@ -19,7 +19,8 @@ btn_start_end.mode = INPUT
 prev_state_btn_start_end = 0
 
 #piezo buzzer
-buzzer = board.digital[4]
+buzzer = board.get_pin('d:3:p')
+
 
 
 #Decision Matrix
@@ -65,17 +66,14 @@ user_score_2.mode = OUTPUT
 user_score_leds = [user_score_0,user_score_1,user_score_2]
 
 #buttons for user input
-btn_user_choice_0 = board.analog[0]
-btn_user_choice_1 = board.analog[1]
-btn_user_choice_2 = board.analog[2]
-btn_user_choice_3 = board.analog[3]
-btn_user_choice_4 = board.analog[4]
+btn_user_choice_0 = board.get_pin('a:0:i')
+btn_user_choice_1 = board.get_pin('a:1:i')
+btn_user_choice_2 = board.get_pin('a:2:i')
+btn_user_choice_3 = board.get_pin('a:3:i')
+btn_user_choice_4 = board.get_pin('a:4:i')
 
-btn_user_choice_0.mode = INPUT
-btn_user_choice_1.mode = INPUT
-btn_user_choice_2.mode = INPUT
-btn_user_choice_3.mode = INPUT
-btn_user_choice_4.mode = INPUT
+
+
 
 
 
@@ -89,11 +87,11 @@ def start_game():
     user_choice = -1
     it.start()   
 
-    btn_user_choice_0.enable_reporting()
-    btn_user_choice_1.enable_reporting()
-    btn_user_choice_2.enable_reporting()
-    btn_user_choice_3.enable_reporting()
-    btn_user_choice_4.enable_reporting()
+    # btn_user_choice_0.enable_reporting()
+    # btn_user_choice_1.enable_reporting()
+    # btn_user_choice_2.enable_reporting()
+    # btn_user_choice_3.enable_reporting()
+    # btn_user_choice_4.enable_reporting()
     btn_start_end.enable_reporting()
 
     
@@ -148,26 +146,27 @@ def get_user_input():
     game_run_led.write(1)
     start_time = time.time()
     choice = -1
-    print('Enter your choice')
+    # print('Enter your choice')
+    print(btn_user_choice_1.read())
     while True:
-       
+        
         if(choice != -1 or (time.time() - start_time) > 10):
             break        
-        if (btn_user_choice_0.read() and btn_user_choice_0.read() > 0.8):
+        if (btn_user_choice_0.read() and btn_user_choice_0.read() == 1):
             choice = 0
-        elif (btn_user_choice_1.read() and btn_user_choice_1.read() > 0.8):
+        elif (btn_user_choice_1.read() and btn_user_choice_1.read() == 1):
             choice = 1
-        elif (btn_user_choice_2.read() and btn_user_choice_2.read() > 0.8):
+        elif (btn_user_choice_2.read() and btn_user_choice_2.read() == 1):
             choice = 2
-        elif (btn_user_choice_3.read() and btn_user_choice_3.read() > 0.8):
+        elif (btn_user_choice_3.read() and btn_user_choice_3.read() == 1):
             choice = 3
-        elif (btn_user_choice_4.read() and btn_user_choice_4.read() > 0.8):
+        elif (btn_user_choice_4.read() and btn_user_choice_4.read() == 1):
             choice = 4
         time.sleep(0.01)
     game_run_led.write(0)
     return choice
 
-def display_score(com_score, user_score):
+def display_score(com_score, user_score, round):
     com_score_bin = np.binary_repr(com_score, width=3)
     
     user_score_bin = np.binary_repr(user_score, width=3)
@@ -200,20 +199,23 @@ it = util. Iterator( board )
 start_game()
 
 while round <7:
-    buzzer.write(1)
+    buzzer.write(0.5)
     time.sleep(1)
     buzzer.write(0)
 
     user_choice = get_user_input()
     time.sleep(2)
+
     if user_choice == -1:
-        round +=1
+        
         com_score +=1
-        display_score(com_score, user_score)
+        display_score(com_score, user_score, round)
+        round +=1
         continue
     
     com_choice = get_com_choice()
-
+    print(user_choice)
+    print(com_choice)
     winner = choose_winner(com_choice, user_choice)
 
     if winner ==1 :   
