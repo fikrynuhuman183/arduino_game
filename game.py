@@ -10,12 +10,10 @@ board = Arduino ("COM6")
 # digital pin number
 
 #Led and button for start/end game
-game_run_led = board.digital[4]
-game_run_led.mode = OUTPUT
+game_run_led = board.get_pin('d:4:o')
 
 #button start/end
-btn_start_end = board.analog[5]
-btn_start_end.mode = INPUT
+btn_start_end = board.get_pin('a:5:i')
 prev_state_btn_start_end = 0
 
 #piezo buzzer
@@ -33,35 +31,23 @@ decision_matrix = [[0.5,0,1,0,1],
 
 
 #Leds representing computer choice
-com_choice_0 = board.digital[7]
-com_choice_1 = board.digital[6]
-com_choice_2 = board.digital[5]
-
-com_choice_0.mode = OUTPUT
-com_choice_1.mode = OUTPUT
-com_choice_2.mode = OUTPUT
+com_choice_0 = board.get_pin('d:7:o')
+com_choice_1 = board.get_pin('d:6:o')
+com_choice_2 = board.get_pin('d:5:o')
 
 com_choice_leds = [com_choice_0,com_choice_1,com_choice_2]
 
 #Leds representing computer score
-com_score_0 = board.digital[10]
-com_score_1 = board.digital[9]
-com_score_2 = board.digital[8]
-
-com_score_0.mode = OUTPUT
-com_score_1.mode = OUTPUT
-com_score_2.mode = OUTPUT
+com_score_0 = board.get_pin('d:10:o')
+com_score_1 = board.get_pin('d:9:o')
+com_score_2 = board.get_pin('d:8:o')
 
 com_score_leds = [com_score_0,com_score_1,com_score_2]
 
 #Leds representing user score
-user_score_0 = board.digital[13]
-user_score_1 = board.digital[12]
-user_score_2 = board.digital[11]
-
-user_score_0.mode = OUTPUT
-user_score_1.mode = OUTPUT
-user_score_2.mode = OUTPUT
+user_score_0 = board.get_pin('d:13:o')
+user_score_1 = board.get_pin('d:12:o')
+user_score_2 = board.get_pin('d:11:o')
 
 user_score_leds = [user_score_0,user_score_1,user_score_2]
 
@@ -87,15 +73,18 @@ def start_game():
     user_choice = -1
     it.start()   
 
-    # btn_user_choice_0.enable_reporting()
-    # btn_user_choice_1.enable_reporting()
-    # btn_user_choice_2.enable_reporting()
-    # btn_user_choice_3.enable_reporting()
-    # btn_user_choice_4.enable_reporting()
+    btn_user_choice_0.enable_reporting()
+    btn_user_choice_1.enable_reporting()
+    btn_user_choice_2.enable_reporting()
+    btn_user_choice_3.enable_reporting()
+    btn_user_choice_4.enable_reporting()
     btn_start_end.enable_reporting()
 
-    
-    time.sleep(3)
+    """ while int(btn_start_end.read()) != prev_value:
+        time.sleep(0.1) """
+
+    buzzer.write(0)
+    time.sleep(2)
     
     
     
@@ -152,15 +141,15 @@ def get_user_input():
         
         if(choice != -1 or (time.time() - start_time) > 10):
             break        
-        if (btn_user_choice_0.read() and btn_user_choice_0.read() == 1):
+        if (btn_user_choice_0.read() and btn_user_choice_0.read() > 0.5):
             choice = 0
-        elif (btn_user_choice_1.read() and btn_user_choice_1.read() == 1):
+        elif (btn_user_choice_1.read() and btn_user_choice_1.read() > 0.5):
             choice = 1
-        elif (btn_user_choice_2.read() and btn_user_choice_2.read() == 1):
+        elif (btn_user_choice_2.read() and btn_user_choice_2.read() > 0.5):
             choice = 2
-        elif (btn_user_choice_3.read() and btn_user_choice_3.read() == 1):
+        elif (btn_user_choice_3.read() and btn_user_choice_3.read() > 0.5):
             choice = 3
-        elif (btn_user_choice_4.read() and btn_user_choice_4.read() == 1):
+        elif (btn_user_choice_4.read() and btn_user_choice_4.read() > 0.5):
             choice = 4
         time.sleep(0.01)
     game_run_led.write(0)
@@ -194,12 +183,15 @@ com_score = 0
 com_choice = -1
 user_choice = -1
 it = util. Iterator( board )
-
+prev_value = 0
 
 start_game()
 
+
+
 while round <7:
-    buzzer.write(0.5)
+    
+    buzzer.write(1)
     time.sleep(1)
     buzzer.write(0)
 
