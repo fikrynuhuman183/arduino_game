@@ -7,7 +7,8 @@ import tkinter as tk
 
 # Create an Arduino board instance
 board = Arduino("COM6")
-it = util. Iterator( board )
+it = util.Iterator( board )
+
 # Led and button for start/end game
 game_run_led = board.get_pin('d:4:o')
 
@@ -16,7 +17,7 @@ btn_start_end = board.get_pin('a:5:i')
 prev_state_btn_start_end = 0
 
 # Piezo buzzer
-buzzer = board.get_pin('d:3:p')
+buzzer = board.get_pin('d:3:o')
 
 # Decision Matrix
 decision_matrix = [[0.5, 0, 1, 0, 1],
@@ -24,6 +25,12 @@ decision_matrix = [[0.5, 0, 1, 0, 1],
                    [0, 1, 0.5, 0, 1],
                    [1, 0, 1, 0.5, 0],
                    [0, 1, 0, 1, 0.5]]
+
+# Rock
+# Paper
+# Scissor
+# Spock
+# Lizard
 
 # Leds representing computer choice
 com_choice_0 = board.get_pin('d:7:o')
@@ -100,9 +107,9 @@ def start_game():
 
 def end_game():
     game_run_led.write(1)
-    for i in range(3):
-        com_score_leds[i].write(0)
-        user_score_leds[i].write(0)
+    # for i in range(3):
+    #     com_score_leds[i].write(0)
+    #     user_score_leds[i].write(0)
 
     game_run_led.write(0)
     while True:
@@ -114,6 +121,7 @@ def end_game():
             buzzer.write(0)
             led.write(0)
         time.sleep(0.2)
+    
 
 
 def choose_winner(com_choice, user_choice):
@@ -155,6 +163,8 @@ def get_user_input():
             choice = 3
         elif btn_user_choice_4.read() and btn_user_choice_4.read() > 0.5:
             choice = 4
+        elif btn_start_end.read() and btn_start_end.read() > 0.5:
+            choice = 5
         time.sleep(0.01)
     game_run_led.write(0)
     return choice
@@ -214,6 +224,9 @@ def game_loop():
         buzzer.write(0)
 
         user_choice = get_user_input()
+        if(user_choice==5):
+            end_game()
+            break
         time.sleep(2)
 
         if user_choice == -1:
