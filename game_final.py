@@ -107,9 +107,7 @@ def start_game():
 
 def end_game():
     game_run_led.write(1)
-    # for i in range(3):
-    #     com_score_leds[i].write(0)
-    #     user_score_leds[i].write(0)
+    
 
     game_run_led.write(0)
     while True:
@@ -216,6 +214,7 @@ def display_result(winner):
 def game_loop():
     global round, user_score, com_score, com_choice, user_choice
 
+        
     start_game()
 
     while round < 7:
